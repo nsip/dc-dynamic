@@ -103,7 +103,8 @@ module.exports = function (ctx) {
         'QTd',
         'QTableColumns',
         'QBtnGroup',
-        'QPageSticky'
+        'QPageSticky',
+        'QModal'
       ],
       directives: [
         'Ripple',

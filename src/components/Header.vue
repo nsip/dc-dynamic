@@ -7,7 +7,7 @@
       >
       <q-toolbar-title>
           <a href="/" style="color:white; text-decoration-line: none">
-           <img src="../assets/logo-2.jpg">
+           <img src="../assets/daybook-icon.png">
           </a>
           <div slot="subtitle"></div>
       </q-toolbar-title>

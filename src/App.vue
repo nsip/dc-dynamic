@@ -14,7 +14,7 @@
     </q-page-container>
       <q-page-sticky position="bottom-right" :offset="[18, 18]">
         <q-btn
-          color="deep-purple-6"
+          color="cyan-6"
           size="md"
           round
           v-back-to-top.animate="{offset: 500, duration: 200}"

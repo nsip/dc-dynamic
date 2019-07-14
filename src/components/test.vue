@@ -1,29 +1,43 @@
 <template>
   <div class="assignment">
-    <div class="row">
-      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 class-list">
-        <q-list>
-          <q-list-header>
-            <img src="../assets/class.png">
-            <h6><b>Class Name</b></h6>
+        <q-list id="chart" class="chart">
+          <q-list-header class="title">
+            <img src="../assets/result.png">
+            <p><b>Average score of each class</b></p>
           </q-list-header>
-          <q-item  v-for="(group, index) in groups" :key="index">
-            <q-item-side/>
-            <q-item-main class="class-list-button">
-              <q-btn
-                color="cyan-6"
-                outline
-                @click="show(index)"
-                >
-                {{ group.assignment_name}}
-              </q-btn>
+          <q-item>
+            <q-item-main>
+              <apexchart type=line height=350 :options="chartOptions" :series="series" />
             </q-item-main>
-            <q-item-side/>
           </q-item>
         </q-list>
+    <hr>
+    <div class="row class-table">
+      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 class-list">
+        <div>
+          <q-list>
+            <q-list-header>
+              <img src="../assets/class.png">
+              <h6><b>Class Name</b></h6>
+            </q-list-header>
+            <q-item  v-for="(group, index) in groups" :key="index">
+              <q-item-side/>
+              <q-item-main class="class-list-button">
+                <q-btn
+                  color="cyan-6"
+                  outline
+                  @click="show(index)"
+                  >
+                  {{ group.assignment_name}}
+                </q-btn>
+              </q-item-main>
+              <q-item-side/>
+            </q-item>
+          </q-list>
+        </div>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 result" style="background-color: #FDFCFF">
-        <q-list id="chart">
+        <!-- <q-list id="chart">
           <q-list-header class="title">
             <img src="../assets/result.png">
           </q-list-header>
@@ -32,11 +46,11 @@
               <apexchart type=line height=350 :options="chartOptions" :series="series" />
             </q-item-main>
           </q-item>
-        </q-list>
+        </q-list> -->
         <div class="result">
           <q-list v-for="group in groups" :key="group" :style="group.display?'display:block':'display:none'">
             <q-list-header>
-              <b> Class Name: {{group.assignment_name}}</b>
+              <b> Class Name: {{group.assignment_name}} </b>
             </q-list-header>
             <q-item>
               <q-item-main>
@@ -53,6 +67,7 @@
                     </q-td>
                   </q-tr>
                 </q-table>
+                <!-- <q-spinner :style="isdisplay?'display:block':'display:none'"/> -->
               </q-item-main>
             </q-item>
           </q-list>
@@ -65,7 +80,7 @@
 <script>
 // import assignment from './assignment.vue'
 import VueApexCharts from 'vue-apexcharts'
-
+import { QSpinnerFacebook } from 'quasar'
 export default {
   props: ['value'],
   components: {
@@ -74,6 +89,7 @@ export default {
   },
   data () {
     return {
+      // isdisplay: false,
       avescore: [],
       xname: [],
       groups: undefined,
@@ -119,10 +135,10 @@ export default {
         stroke: {
           curve: 'straight'
         },
-        title: {
-          text: 'Average score of each class',
-          align: 'left'
-        },
+        // title: {
+        //   text: 'Average score of each class',
+        //   align: 'left'
+        // },
         colors: ['#00bcd4'],
         grid: {
           borderColor: '#e7e7e7',
@@ -228,17 +244,23 @@ export default {
   },
   methods: {
     show (i) {
+      this.$q.loading.show({
+        spinner: QSpinnerFacebook,
+        spinnerColor: 'cyan-1'
+      })
       setTimeout(() => {
         for (let a of this.groups) {
           a.display = false
         }
         setTimeout(() => {
           this.groups[i].display = true
+          this.$q.loading.hide()
         }, 1000)
       }, 1000)
     },
     rowClick (row) {
       console.log(row)
+      // this.$router.push({ name: 'student', params: {studentname: row.student_name} })
       // this.$q.notify({
       //   color: 'primary',
       //   icon: 'local_dining',
@@ -250,6 +272,12 @@ export default {
       //     }
       //   }]
       // })
+      this.$q.dialog({
+        title: `${row.student_name}`,
+        message: `Score: ${row.result_event.result.score.scaled} ` + ` Absence days: ${row.absence_days}`,
+        ok: 'Close',
+        color: 'cyan-6'
+      })
     }
   }
 }

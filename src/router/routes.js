@@ -4,11 +4,9 @@ const routes = [
     path: '/',
     name: 'home',
     component: () => import('components/CourseSummary.vue')
-    // children: [
-    //   { path: '', name: 'Home', component: () => import('layouts/Index.vue') },
-    // ]
   },
   { path: '/test/:value', name: 'test', component: () => import('components/test.vue'), props: true },
+  { path: '/test/student/:studentname', name: 'student', component: () => import('components/student.vue'), props: true },
   // Undefine router
   {
     path: '*',
