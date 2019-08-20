@@ -1,0 +1,7 @@
+.quasar/artifacts.json
+*.swp
+dist
+*~
+*.old
+tmp
+node_modules
