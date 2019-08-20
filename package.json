@@ -9,7 +9,11 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0",
-    "dev": "quasar dev"
+    "dev": "quasar dev",
+    "start": "./node_modules/.bin/quasar dev",
+    "debug": "./node_modules/.bin/quasar dev",
+    "build": "./node_modules/.bin/quasar build",
+    "update-version": "bash tools/update-version.sh"
   },
   "dependencies": {
     "@marketconnect/vue-pivot-table": "0.0.1",
