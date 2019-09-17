@@ -1,3 +1,4 @@
+build
 .quasar/artifacts.json
 *.swp
 dist
