@@ -11,9 +11,9 @@ mkdir -p build/Linux64/dc-dynamic
 mkdir -p build/Mac/dc-dynamic
 mkdir -p build/Win64/dc-dynamic
 ./node_modules/.bin/quasar build
-rsync -av dist/spa-mta/* build/Linux64/dc-dynamic/
-rsync -av dist/spa-mta/* build/Mac/dc-dynamic/
-rsync -av dist/spa-mta/* build/Win64/dc-dynamic/
+rsync -av dist/spa-mat/* build/Linux64/dc-dynamic/
+rsync -av dist/spa-mat/* build/Mac/dc-dynamic/
+rsync -av dist/spa-mat/* build/Win64/dc-dynamic/
 
 echo "Building Linux64 binaries..."
 GOOS=linux
