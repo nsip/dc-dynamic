@@ -12,7 +12,7 @@
     "dev": "quasar dev",
     "start": "./node_modules/.bin/quasar dev",
     "debug": "./node_modules/.bin/quasar dev",
-    "build": "./node_modules/.bin/quasar build",
+    "build": "./node_modules/.bin/quasar build && rsync -av src/assets dist/spa-mat/",
     "buildstatic": "go build -o dist/spa-mat/static tools/static.go",
     "update-version": "bash tools/update-version.sh"
   },
