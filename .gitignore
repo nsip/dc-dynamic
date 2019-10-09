@@ -6,3 +6,5 @@ dist
 *.old
 tmp
 node_modules
+.quasar/client-entry.js
+package-lock.json

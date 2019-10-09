@@ -81,6 +81,7 @@
 // import assignment from './assignment.vue'
 import VueApexCharts from 'vue-apexcharts'
 import { QSpinnerFacebook } from 'quasar'
+import { n3baseUrl, authHeader } from '../data'
 export default {
   props: ['value'],
   components: {
@@ -174,7 +175,15 @@ export default {
     }
   },
   created () {
+
+    // 
+    // retreive the linked data for this group...
+    // 
     const axios = require('axios')
+    // 
+    // get fulltraversal & supporting routines 
+    // from mm2
+    // 
     axios({
       url: 'http://localhost:1340/graphql',
       method: 'post',
@@ -255,23 +264,11 @@ export default {
         setTimeout(() => {
           this.groups[i].display = true
           this.$q.loading.hide()
-        }, 1000)
-      }, 1000)
+        }, 250)
+      }, 250)
     },
     rowClick (row) {
       console.log(row)
-      // this.$router.push({ name: 'student', params: {studentname: row.student_name} })
-      // this.$q.notify({
-      //   color: 'primary',
-      //   icon: 'local_dining',
-      //   message: `Hmm, are you sure? It has ${row.result_event.result.score.scaled} calories.`,
-      //   actions: [{
-      //     label: 'Yes, eat!',
-      //     handler: () => {
-      //       this.$q.notify({ color: 'positive', icon: 'done', message: 'Yummy. Thanks! Now one more.' })
-      //     }
-      //   }]
-      // })
       this.$q.dialog({
         title: `${row.student_name}`,
         message: `Score: ${row.result_event.result.score.scaled} ` + ` Absence days: ${row.absence_days}`,
@@ -281,4 +278,238 @@ export default {
     }
   }
 }
+
+// 
+// sort grading assignemts by description
+// 
+function assignmentCompare(a, b) {
+    // Use toUpperCase() to ignore character casing
+    const gaA = a.Description.toUpperCase();
+    const gaB = b.Description.toUpperCase();
+
+    let comparison = 0;
+    if (gaA > gaB) {
+        comparison = 1;
+    } else if (gaA < gaB) {
+        comparison = -1;
+    }
+    return comparison;
+}
+
+// 
+// sort xapi results by score
+// 
+function xapiCompare(a, b) {
+    const gaA = a.result.score.scaled;
+    const gaB = b.result.score.scaled;
+
+    let comparison = 0;
+    if (gaA > gaB) {
+        comparison = 1;
+    } else if (gaA < gaB) {
+        comparison = -1;
+    }
+    return comparison * -1;
+}
+
+
+
+// 
+// groups xapi results by grading assignment
+// 
+function extractAssignmentResults(queryData) {
+
+    results = {};
+
+    for (const xapi of queryData.XAPI) {
+        // console.log(xapi);
+        xapiArray = results[xapi.object.id];
+        if (!xapiArray || !xapiArray.length) {
+            results[xapi.object.id] = [];
+        }
+        results[xapi.object.id].push(xapi);
+    }
+
+    return results;
+}
+
+// 
+// access sif refids via xapi mbox
+// 
+function extractUserIds(queryData) {
+
+    results = {};
+
+    for (const sp of queryData.StudentPersonal) {
+        // console.log(sp);
+        mbox = sp.PersonInfo.EmailList.Email[0].value;
+        spArray = results[mbox];
+        if (!spArray || !spArray.length) {
+            results[mbox] = [];
+        }
+        results[mbox].push(sp.RefId);
+    }
+
+    return results;
+}
+
+// 
+// group attendance by student
+// 
+function extractAttendanceReports(queryData) {
+
+    results = {};
+
+    for (const satl of queryData.StudentAttendanceTimeList) {
+        // console.log(sp);
+        sprefid = satl.StudentPersonalRefId;
+        satlArray = results[sprefid];
+        if (!satlArray || !satlArray.length) {
+            results[sprefid] = [];
+        }
+        results[sprefid].push(satl);
+    }
+
+    return results;
+}
+
+
+
+// 
+// helpers for parsing ISO durations from xAPI
+// 
+var regex = /P((([0-9]*\.?[0-9]*)Y)?(([0-9]*\.?[0-9]*)M)?(([0-9]*\.?[0-9]*)W)?(([0-9]*\.?[0-9]*)D)?)?(T(([0-9]*\.?[0-9]*)H)?(([0-9]*\.?[0-9]*)M)?(([0-9]*\.?[0-9]*)S)?)?/
+
+minutesFromIsoDuration = function(duration) {
+    var matches = duration.match(regex);
+
+    return parseFloat(matches[14]) || 0;
+}
+
+
+// 
+// the GQL query
+// 
+var progressQuery = `
+query fullTraversal($qspec: QueryInput!) {
+  q(qspec: $qspec) {
+    Lesson {
+      title
+    }
+    LessonSequence{
+      thesubject
+      thecourse
+      lessonList{
+        summary
+        editcontent
+      }
+    }
+    Syllabus {
+      learning_area
+      stage
+      subject
+      overview
+      courses {
+        name
+        focus
+      }
+      concepts {
+        description
+        name
+      }
+    }
+    StaffPersonal {
+      LocalId
+      RefId
+      EmploymentStatus
+    }
+    GradingAssignment {
+      DetailedDescriptionURL
+      PointsPossible
+      Description
+      TeachingGroupRefId
+      RefId
+    }
+    Subject {
+      subject
+      learning_area
+      stage
+      yrLvls
+      synonyms
+    }
+    Lesson {
+      lesson_id
+      content
+      title
+      stage
+      subject
+      teacher
+      learning_area
+    }
+    SchoolInfo {
+      StateProvinceId
+      SchoolURL
+      SchoolType
+      RefId
+      SchoolDistrict
+      LocalId
+      SchoolName
+      CommonwealthId
+      SchoolSector
+    }
+    StudentPersonal {
+      RefId
+      LocalId
+      PersonInfo {
+        Demographics {
+          BirthDate
+          IndigenousStatus
+          Sex
+        }
+      }
+    }
+    TeachingGroup {
+      SchoolYear
+      LocalId
+      LongName
+      ShortName
+      TimeTableSubjectRefId
+      RefId
+    }
+    XAPI {
+      id
+      actor {
+        mbox
+        name
+      }
+      verb {
+        id
+        display {
+          en_US
+        }
+      }
+      object {
+        id
+        definition {
+          name
+          type
+        }
+      }
+      result {
+        duration
+        success
+        completion
+        score {
+          min
+          max
+          scaled
+        }
+      }
+    }
+  }
+}
+`
+
+
+
 </script>

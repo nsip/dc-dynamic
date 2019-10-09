@@ -1,10 +1,8 @@
 <template>
     <div class="header">
     <q-layout-header reveal @scroll="handleSCroll">
-      <q-toolbar
-        color="white"
-        :inverted="$q.theme === 'mat' & 'ios'"
-      >
+      <!-- <q-toolbar color="white" :inverted="$q.theme === 'mat' & 'ios'"> -->
+      <q-toolbar color="white" >        
       <q-toolbar-title>
           <a href="/" style="color:white; text-decoration-line: none">
            <img src="../assets/daybook-icon.png">

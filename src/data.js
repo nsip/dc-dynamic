@@ -121,3 +121,12 @@ export let years = [
     value: 12
   }
 ]
+
+
+export let n3baseUrl = 'http://localhost:1323/n3'
+
+export let authHeader = {'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZW1vIiwiY25hbWUiOiJteVNjaG9vbCIsInVuYW1lIjoibjNEZW1vIn0.VTD8C6pwbkQ32u-vvuHnxq3xijdwNTd54JAyt1iLF3I`}
+
+
+
+
